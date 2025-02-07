@@ -3,26 +3,27 @@ import { Body, Circle, Edge, Shape, World } from 'planck'
 import simplify from 'simplify-js'
 
 const scale = 10
-const gravity = 30
+const gravity = 40
 const initialX = 200 / scale
 const initialY = 350 / scale
-const angularDamping = 0.215
-const linearDamping = 0.108
+const angularDamping = 0.24
+const linearDamping = 0.11
 const maxBallSize = 2000
 const minBallSize = 50
 const sizeFactor = 220
 const slopeDistribution = [1, 1, 1, 1, -1, -1]
-const slopeSize = [800, 1200]
+const slopeSize = [1000, 1400]
 const slopeStrength = [0.7, 1.5]
 const initialSlopeStrength = 10
 const initialSlopeLength = 3000
-const baseGravity = 5
+const baseGravity = 7
 const ballGrowRate = 0.015
-const ballShrinkRate = 2
+const ballShrinkRate = 4
 const scoreFactor = 0.1
-const uphillFactor = 0.95
+const sizeGravityFactor = 1
+const difficultyScale = 3000
 
-const gameSpeed = 0.15
+const gameSpeed = 0.05
 const timeStep = 1 / 60
 
 type Vector = { x: number; y: number }
@@ -135,6 +136,7 @@ export class Game extends Scene {
 
   update(_t: number, dt: number) {
     let deltaTime = dt * 1000
+    const ratio = dt / timeStep / 1000
 
     let steps = 0
     while (deltaTime > timeStep && steps++ < 5) {
@@ -153,7 +155,7 @@ export class Game extends Scene {
 
     if (this.input.activePointer.isDown) {
       this.gravityFactor = 3
-      this.ballSize -= ballShrinkRate
+      this.ballSize -= ballShrinkRate * ratio
 
       if (this.ballSize <= minBallSize && !this.hasLost) {
         this.ballSize = minBallSize
@@ -188,8 +190,8 @@ export class Game extends Scene {
       const s = Phaser.Math.Clamp(baseSpeed / 40, 0, 10)
       const s2 = Phaser.Math.Clamp(baseSpeed / 60, 0, 1)
       this.rollParticles.setConfig({
-        speedX: { onEmit: () => Phaser.Math.RND.between(100, 250) * s },
-        speedY: { onEmit: () => Phaser.Math.RND.between(-130, -10) * s },
+        speedX: { onEmit: () => Phaser.Math.RND.between(50, 150) * s },
+        speedY: { onEmit: () => Phaser.Math.RND.between(-50, -10) * s },
         lifespan: 500,
         gravityY: 100,
         scale: { max: s2, min: 0 },
@@ -201,7 +203,7 @@ export class Game extends Scene {
         y * scale,
       )
       if (this.ballSize < maxBallSize && this.gravityFactor === 1)
-        this.ballSize += Math.abs(baseSpeed * ballGrowRate)
+        this.ballSize += Math.abs(baseSpeed * ballGrowRate * ratio)
     }
 
     let fixture = this.ball.getFixtureList()
@@ -213,7 +215,7 @@ export class Game extends Scene {
     })
     const shape = fixture.getShape() as IShape
     this.ball.setGravityScale(
-      (baseGravity + shape.m_radius / 2) * this.gravityFactor,
+      (baseGravity + shape.m_radius * sizeGravityFactor) * this.gravityFactor,
     )
 
     this.draw()
@@ -275,8 +277,9 @@ export class Game extends Scene {
       m2 = Phaser.Math.RND.realInRange(slopeStrength[0], slopeStrength[1])
       length = Phaser.Math.Between(slopeSize[0], slopeSize[1])
       if (m < 0) {
-        m2 *= uphillFactor
-        length *= uphillFactor
+        const difficultyFactor = 1 + this.score / difficultyScale
+        m2 *= difficultyFactor
+        length *= difficultyFactor
       }
     }
     this.slopeY += m2 * m
