@@ -8,7 +8,6 @@ const config: Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 1600,
   height: 720,
-  // height: 1600 * aspectRatio,
   parent: 'game-container',
   backgroundColor: '#028af8',
   scale: {
