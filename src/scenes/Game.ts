@@ -3,10 +3,9 @@ import { Body, Circle, Edge, Shape, World } from 'planck'
 import simplify from 'simplify-js'
 
 const scale = 10
-const gravity = 20
+const gravity = 30
 const initialX = 200 / scale
 const initialY = 350 / scale
-const gameSpeed = 1
 const angularDamping = 0.215
 const linearDamping = 0.108
 const maxBallSize = 2000
@@ -21,6 +20,10 @@ const baseGravity = 5
 const ballGrowRate = 0.015
 const ballShrinkRate = 2
 const scoreFactor = 0.1
+const uphillFactor = 0.95
+
+const gameSpeed = 0.15
+const timeStep = 1 / 60
 
 type Vector = { x: number; y: number }
 interface IShape extends Shape {
@@ -127,8 +130,13 @@ export class Game extends Scene {
   }
 
   update(_t: number, dt: number) {
-    this.world.step((dt / 1000) * gameSpeed)
-    this.world.clearForces()
+    let deltaTime = dt * 1000
+
+    let steps = 0
+    while (deltaTime > timeStep && steps++ < 5) {
+      this.world.step(timeStep * gameSpeed)
+      deltaTime -= timeStep * gameSpeed
+    }
     const baseSpeed = this.ball.getLinearVelocity().x
 
     let pos = this.ball.getPosition()
@@ -263,8 +271,8 @@ export class Game extends Scene {
       m2 = Phaser.Math.RND.realInRange(slopeStrength[0], slopeStrength[1])
       length = Phaser.Math.Between(slopeSize[0], slopeSize[1])
       if (m < 0) {
-        m2 *= 0.95
-        length *= 0.95
+        m2 *= uphillFactor
+        length *= uphillFactor
       }
     }
     this.slopeY += m2 * m
