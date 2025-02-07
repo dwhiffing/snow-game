@@ -82,6 +82,10 @@ export class Game extends Scene {
     this.gravityFactor = 1
     this.hasLost = false
 
+    this.input.keyboard!.on('keydown-M', () => {
+      this.sound.setMute(!this.sound.mute)
+    })
+
     this.ball = this.world.createBody({
       angularDamping,
       linearDamping,

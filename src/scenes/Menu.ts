@@ -20,6 +20,10 @@ export class Menu extends Scene {
         0x028af8,
       )
       .setDepth(10)
+
+    this.input.keyboard!.on('keydown-M', () => {
+      this.sound.setMute(!this.sound.mute)
+    })
     this.tweens.add({
       targets: circle,
       scale: 0,
