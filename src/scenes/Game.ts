@@ -2,12 +2,12 @@ import { Scene } from 'phaser'
 import { Body, Circle, Edge, Shape, World } from 'planck'
 import simplify from 'simplify-js'
 
-const scale = 10
-const gravity = 10
+const scale = 7
+const gravity = 5
 const initialX = 200 / scale
 const initialY = 350 / scale
 const angularDamping = 0.11
-const linearDamping = 0.05
+const linearDamping = 0.0575
 const maxBallSize = 2000
 const minBallSize = 50
 const sizeFactor = 220
@@ -17,11 +17,11 @@ const slopeStrength = [0.7, 1.5]
 const initialSlopeStrength = 10
 const initialSlopeLength = 3000
 const baseGravity = 3
-const ballGrowRate = 0.035
-const ballShrinkRate = 4.5
+const ballGrowRate = 0.0325
+const ballShrinkRate = 3.5
 const scoreFactor = 0.2
 const sizeGravityFactor = 1
-const difficultyScale = 2000
+const difficultyScale = 10000
 
 type Vector = { x: number; y: number }
 interface IShape extends Shape {
@@ -271,7 +271,7 @@ export class Game extends Scene {
       m2 = Phaser.Math.RND.realInRange(slopeStrength[0], slopeStrength[1])
       length = Phaser.Math.Between(slopeSize[0], slopeSize[1])
       if (m < 0) {
-        const difficultyFactor = 0.8 + this.score / difficultyScale
+        const difficultyFactor = 0.45 + this.score / difficultyScale
         m2 *= difficultyFactor
         length *= difficultyFactor
       }
