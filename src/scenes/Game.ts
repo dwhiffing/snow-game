@@ -6,8 +6,8 @@ const scale = 10
 const gravity = 10
 const initialX = 200 / scale
 const initialY = 350 / scale
-const angularDamping = 0.12
-const linearDamping = 0.06
+const angularDamping = 0.11
+const linearDamping = 0.05
 const maxBallSize = 2000
 const minBallSize = 50
 const sizeFactor = 220
@@ -17,11 +17,11 @@ const slopeStrength = [0.7, 1.5]
 const initialSlopeStrength = 10
 const initialSlopeLength = 3000
 const baseGravity = 3
-const ballGrowRate = 0.03
+const ballGrowRate = 0.035
 const ballShrinkRate = 4.5
-const scoreFactor = 0.1
+const scoreFactor = 0.2
 const sizeGravityFactor = 1
-const difficultyScale = 3000
+const difficultyScale = 2000
 
 type Vector = { x: number; y: number }
 interface IShape extends Shape {
